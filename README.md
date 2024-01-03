@@ -1,7 +1,7 @@
 # youtube-unsubscribe-all
 Modified script that assists in unsubscribing from channels on YouTube.
 Paste it in console of site "https://www.youtube.com/feed/channels".
-
+{
 
 (async function iife() {
   // This is the time delay after which the "unsubscribe" button is "clicked"; Change it as per your need!
@@ -63,3 +63,5 @@ Paste it in console of site "https://www.youtube.com/feed/channels".
     }
   }
 })();
+
+}
