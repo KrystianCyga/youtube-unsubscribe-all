@@ -1,0 +1,61 @@
+
+(async function iife() {
+  // This is the time delay after which the "unsubscribe" button is "clicked"; Change it as per your need!
+  var UNSUBSCRIBE_DELAY_TIME = 2000;
+
+  /**
+   * Delay runner. Wraps `setTimeout` so it can be `await`ed on.
+   * @param {Function} fn
+   * @param {number} delay
+   */
+  var runAfterDelay = (fn, delay) => new Promise((resolve) => {
+    setTimeout(() => {
+      fn();
+      resolve();
+    }, delay);
+  });
+
+  // Get the channel list; this can be considered a row in the page.
+  var channels = Array.from(document.getElementsByTagName('ytd-channel-renderer'));
+  console.log(`${channels.length} channels found.`);
+
+  var ctr = 0;
+  for (const channel of channels) {
+    // Get the button that represents subscription
+    var subscribeButton = channel.querySelector('button[aria-label^="Aktualne ustawienie to otrzymywanie spersonalizowanych powiadomień"]');
+
+    if (subscribeButton) {
+      // Click the subscribe button
+      subscribeButton.click();
+
+      await runAfterDelay(() => {
+        // Find the "Rezygnuję z subskrypcji" elements in the expanded menu
+        var unsubscribeElements = document.querySelectorAll('yt-formatted-string.style-scope.ytd-menu-service-item-renderer');
+
+        // Find the appropriate "Rezygnuję z subskrypcji" element and click it
+        var unsubscribeOption;
+        for (const element of unsubscribeElements) {
+          if (element.innerText === 'Rezygnuję z subskrypcji') {
+            unsubscribeOption = element;
+            break;
+          }
+        }
+
+        if (unsubscribeOption) {
+          unsubscribeOption.click();
+
+          // Wait for a while for the confirmation dialog to appear
+          setTimeout(() => {
+            // Find the confirmation button and "trigger" the click
+            var confirmButton = document.querySelector('button.yt-spec-button-shape-next[aria-label="Rezygnuję z subskrypcji"]');
+            if (confirmButton) {
+              confirmButton.click();
+              console.log(`Unsubscribed ${ctr + 1}/${channels.length}`);
+              ctr++;
+            }
+          }, UNSUBSCRIBE_DELAY_TIME);
+        }
+      }, UNSUBSCRIBE_DELAY_TIME);
+    }
+  }
+})();
